@@ -1,0 +1,13 @@
+C:\Users\jpabl\OneDrive\Escritorio\programacion\pascualBravo\hdep2\inicioDeSesion\bin\Debug\inicioDeSesion.exe.config
+C:\Users\jpabl\OneDrive\Escritorio\programacion\pascualBravo\hdep2\inicioDeSesion\bin\Debug\inicioDeSesion.exe
+C:\Users\jpabl\OneDrive\Escritorio\programacion\pascualBravo\hdep2\inicioDeSesion\bin\Debug\inicioDeSesion.pdb
+C:\Users\jpabl\OneDrive\Escritorio\programacion\pascualBravo\hdep2\inicioDeSesion\obj\Debug\inicioDeSesion.csproj.AssemblyReference.cache
+C:\Users\jpabl\OneDrive\Escritorio\programacion\pascualBravo\hdep2\inicioDeSesion\obj\Debug\inicioDeSesion.csproj.SuggestedBindingRedirects.cache
+C:\Users\jpabl\OneDrive\Escritorio\programacion\pascualBravo\hdep2\inicioDeSesion\obj\Debug\inicioDeSesion.frmPrincipal.resources
+C:\Users\jpabl\OneDrive\Escritorio\programacion\pascualBravo\hdep2\inicioDeSesion\obj\Debug\inicioDeSesion.Properties.Resources.resources
+C:\Users\jpabl\OneDrive\Escritorio\programacion\pascualBravo\hdep2\inicioDeSesion\obj\Debug\inicioDeSesion.csproj.GenerateResource.cache
+C:\Users\jpabl\OneDrive\Escritorio\programacion\pascualBravo\hdep2\inicioDeSesion\obj\Debug\inicioDeSesion.csproj.CoreCompileInputs.cache
+C:\Users\jpabl\OneDrive\Escritorio\programacion\pascualBravo\hdep2\inicioDeSesion\obj\Debug\inicioDeSesion.exe
+C:\Users\jpabl\OneDrive\Escritorio\programacion\pascualBravo\hdep2\inicioDeSesion\obj\Debug\inicioDeSesion.pdb
+C:\Users\jpabl\OneDrive\Escritorio\programacion\pascualBravo\hdep2\inicioDeSesion\obj\Debug\inicioDeSesion.frmSingIn.resources
+C:\Users\jpabl\OneDrive\Escritorio\programacion\pascualBravo\hdep2\inicioDeSesion\obj\Debug\inicioDeSesion.frmSignUp.resources
