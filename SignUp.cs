@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SQLite;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -21,60 +22,12 @@ namespace inicioDeSesion
         {
             InitializeComponent();
 
-            //carga los datos de los usuarios en la lista usuarios para las validaciones en el registro
-            leerArc();
+        
         }
 
 
 
-        //metodos propios
-
-        //pa llenar el archivo plano con los datos del usuario
-        public void llenarArc()
-        {
-            StreamWriter sw = new StreamWriter("..\\..\\users.txt");
-
-            foreach (User u in users)
-            {
-                sw.WriteLine($"{u.id}|{u.user}|{u.password}");
-            }
-            sw.Close();
-
-        }
-
-        public void leerArc()
-        {
-            StreamReader sr = new StreamReader("..\\..\\users.txt");
-            string linea;
-            linea = sr.ReadLine();
-            bool usuarioRepetido = false;
-            while (linea != null)
-            {
-                string[] vec = linea.Split('|');
-                try
-                {
-                    foreach (User u in users)
-                    {
-                        if (u.user == vec[1])
-                        {
-                            usuarioRepetido = true;
-                        }
-                    }
-
-                    if (usuarioRepetido == false)
-                    {
-                        users.Add(new User(Convert.ToInt32(vec[0]), vec[1], vec[2]));
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Error: " + e);
-                }
-
-                linea = sr.ReadLine();
-            }
-            sr.Close();
-        }
+        
 
         private void btnSignUp_Click(object sender, EventArgs e)
         {
@@ -121,12 +74,53 @@ namespace inicioDeSesion
 
                 if (userRepetido == false)
                 {
-                    users.Add(new User(id, txtUser.Text, txtPassword.Text));
-                    llenarArc();
-                    MessageBox.Show("Usuario registrado :)");
-                    txtUser.Clear();
-                    txtPassword.Clear();
+                    try
+                    {
+                        //Utilizamos estos tres objetos de SQLite
+                        SQLiteConnection conexion_sqlite;
+                        SQLiteCommand cmd_sqlite;
+                        SQLiteDataReader datareader_sqlite;
+
+                        //Crear una nueva conexión de la base de datos
+                        conexion_sqlite = new SQLiteConnection("Data Source=InicioSesion.db;Version=3;Compress=True;");
+
+                        //Abriremos la conexión
+                        conexion_sqlite.Open();
+
+                        //Creando el comando SQL
+                        cmd_sqlite = conexion_sqlite.CreateCommand();
+                        
+
+                        cmd_sqlite.CommandText = string.Format("INSERT INTO tblUsuario values({0},'{1}','{2}')", id, txtUser.Text, txtPassword.Text);
+
+                        datareader_sqlite = cmd_sqlite.ExecuteReader();
+
+                        while (datareader_sqlite.Read())
+                        {
+                            //Mostrando los datos
+
+                            int idU = Convert.ToInt32(datareader_sqlite.GetString(0));
+                            string nameU = datareader_sqlite.GetString(1);
+                            string passU = datareader_sqlite.GetString(2);
+
+                            MessageBox.Show(idU + nameU + passU);
+
+                        }
+
+
+                        conexion_sqlite.Close();
+
+                        MessageBox.Show("Usuario registrado :)");
+
+                        txtUser.Clear();
+                        txtPassword.Clear();
+                    }
+                    catch (Exception err) {
+                        MessageBox.Show("Error al registrar al usuario " + err);
+                    }
+                    
                 }
+
             }
             else
             {

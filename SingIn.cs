@@ -9,6 +9,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Extensions.Configuration;
+using System.Data.SqlClient;
+using System.Data.SQLite;
+
 
 namespace inicioDeSesion
 {
@@ -17,6 +21,10 @@ namespace inicioDeSesion
         int intentos = 0;
         List<User> usuarios = User.usuarios;
         User user;
+
+
+        string connectionString = "Data Source=.;Initial Catalog=InicioSesion;User ID=DESKTOP-8ASV2F4\\jprp;Password=";
+
 
 
         public frmSingIn()
@@ -78,7 +86,7 @@ namespace inicioDeSesion
         {
             bool ok = false;
 
-           
+
             foreach (User u in usuarios)
             {
                 if (txtUser.Text.Trim() == u.user)
@@ -92,7 +100,7 @@ namespace inicioDeSesion
                     else
                     {
                         ok = false;
-                        
+
 
                     }
                 }
@@ -104,7 +112,7 @@ namespace inicioDeSesion
 
             if (ok)
             {
-                
+
                 MessageBox.Show("Bienvenido");
 
             }
@@ -120,7 +128,8 @@ namespace inicioDeSesion
                 MessageBox.Show("El usuario o la contraseña estan incorrectas");
             }
 
-           
+            
+
         }
 
         private void pbxBack_Click(object sender, EventArgs e)
