@@ -12,6 +12,13 @@ namespace inicioDeSesion
 {
     public partial class frmPrincipal : Form
     {
+    
+        /// <summary>
+        ///  Juan Pablo Roldan Patiño
+        ///  2023
+        ///  Esto es un inicio de sesión, registro y un crud sobre una tabla en base de datos
+        /// </summary>
+    
         public frmPrincipal()
         {
             InitializeComponent();
