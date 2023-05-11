@@ -23,10 +23,6 @@ namespace inicioDeSesion
         User user;
 
 
-        string connectionString = "Data Source=.;Initial Catalog=InicioSesion;User ID=DESKTOP-8ASV2F4\\jprp;Password=";
-
-
-
         public frmSingIn()
         {
             InitializeComponent();
@@ -84,51 +80,56 @@ namespace inicioDeSesion
 
         private void btnSignIn_Click(object sender, EventArgs e)
         {
-            bool ok = false;
-
-
-            foreach (User u in usuarios)
+            
+            try
             {
-                if (txtUser.Text.Trim() == u.user)
-                {
-                    if (txtPassword.Text.Trim() == u.password)
-                    {
-                        user = u;
-                        ok = true;
-                        break;
-                    }
-                    else
-                    {
-                        ok = false;
+                //Utilizamos estos tres objetos de SQLite
+                SQLiteConnection conexion_sqlite;
+                SQLiteCommand cmd_sqlite;
+                SQLiteDataReader datareader_sqlite;
+
+                //Crear una nueva conexión de la base de datos
+                conexion_sqlite = new SQLiteConnection("Data Source=InicioSesion.db;Version=3;Compress=True;");
+
+                //Abriremos la conexión
+                conexion_sqlite.Open();
+
+                //Creando el comando SQL
+                cmd_sqlite = conexion_sqlite.CreateCommand();
 
 
-                    }
+                cmd_sqlite.CommandText = string.Format("SELECT * FROM tblUsuario WHERE user='{0}' AND password='{1}'", txtUser.Text, txtPassword.Text);                
+
+                int count = Convert.ToInt32(cmd_sqlite.ExecuteScalar());
+
+                if (count > 0) { 
+                    MessageBox.Show("Usuario registrado :)");
                 }
                 else
                 {
-                    ok = false;
-                }
-            }
+                    intentos++;
 
-            if (ok)
-            {
+                    if (intentos >= 3)
+                    {
+                        Application.Exit();
+                    }
 
-                MessageBox.Show("Bienvenido");
-
-            }
-            else
-            {
-                intentos++;
-
-                if (intentos >= 3)
-                {
-                    Application.Exit();
+                    MessageBox.Show("El usuario o la contraseña estan incorrectas");
                 }
 
-                MessageBox.Show("El usuario o la contraseña estan incorrectas");
+
+                conexion_sqlite.Close();
+
+
+                txtUser.Clear();
+                txtPassword.Clear();
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show("Error al registrar al usuario " + err);
             }
 
-            
+
 
         }
 
