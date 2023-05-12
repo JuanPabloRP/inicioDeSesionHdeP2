@@ -38,88 +38,72 @@ namespace inicioDeSesion
 
             if (txtUser.Text.Trim() != "" && txtPassword.Text.Trim() != "" )
             {
-                do
+                try
                 {
-                    id = n.Next(1000000, 9999999);
-
-                    if (users.Count > 0)
-                    {
-                        foreach (User u in users)
-                        {
-
-                            if (id == u.id)
-                            {
-                                idRepetido = true;
-                                break;
-                            }
+                    SQLiteConnection conexion_sqlite;
+                    SQLiteCommand cmd_sqlite;
+                    
 
 
-                        }
-                    }
-
-                } while (idRepetido == true);
+                    conexion_sqlite = new SQLiteConnection("Data Source=InicioSesion.db;Version=3;Compress=True;");
 
 
-                foreach (User u in users)
-                {
-                    if (txtUser.Text.Equals(u.user))
-                    {
-                        userRepetido = true;
-                        MessageBox.Show("Por favor ingrese otro nombre de usuario");
-                        txtUser.Clear();
-                        break;
-                    }
-                }
+                    conexion_sqlite.Open();
 
+                    cmd_sqlite = conexion_sqlite.CreateCommand();
 
-                if (userRepetido == false)
-                {
                     try
                     {
-                        //Utilizamos estos tres objetos de SQLite
-                        SQLiteConnection conexion_sqlite;
-                        SQLiteCommand cmd_sqlite;
-                        SQLiteDataReader datareader_sqlite;
-
-                        //Crear una nueva conexión de la base de datos
-                        conexion_sqlite = new SQLiteConnection("Data Source=InicioSesion.db;Version=3;Compress=True;");
-
-                        //Abriremos la conexión
-                        conexion_sqlite.Open();
-
-                        //Creando el comando SQL
-                        cmd_sqlite = conexion_sqlite.CreateCommand();
-                        
-
-                        cmd_sqlite.CommandText = string.Format("INSERT INTO tblUsuario values({0},'{1}','{2}')", id, txtUser.Text, txtPassword.Text);
-
-                        datareader_sqlite = cmd_sqlite.ExecuteReader();
-
-                        while (datareader_sqlite.Read())
-                        {
-                            //Mostrando los datos
-
-                            int idU = Convert.ToInt32(datareader_sqlite.GetString(0));
-                            string nameU = datareader_sqlite.GetString(1);
-                            string passU = datareader_sqlite.GetString(2);
-
-                            MessageBox.Show(idU + nameU + passU);
-
-                        }
+                        cmd_sqlite.CommandText = string.Format("SELECT * FROM tblUsuario WHERE user='{0}'", txtUser.Text);
 
 
-                        conexion_sqlite.Close();
 
-                        MessageBox.Show("Usuario registrado :)");
-
-                        txtUser.Clear();
-                        txtPassword.Clear();
                     }
-                    catch (Exception err) {
-                        MessageBox.Show("Error al registrar al usuario " + err);
+                    catch (SQLiteException ex)
+                    {
+                        MessageBox.Show(ex.Message);
                     }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+
+
+
+
+                    cmd_sqlite.CommandText = string.Format("INSERT INTO tblUsuario values({0},'{1}','{2}')", id, txtUser.Text, txtPassword.Text);
+
+
+                    /*
+                     // SQLiteDataReader datareader_sqlite;
                     
+                    datareader_sqlite = cmd_sqlite.ExecuteReader();
+
+
+                    while (datareader_sqlite.Read())
+                    {
+
+                        int idU = Convert.ToInt32(datareader_sqlite.GetString(0));
+                        string nameU = datareader_sqlite.GetString(1);
+                        string passU = datareader_sqlite.GetString(2);
+
+                        MessageBox.Show(idU + nameU + passU);
+
+                    }
+                    */
+
+                    conexion_sqlite.Close();
+
+                    MessageBox.Show("Usuario registrado :)");
+
+                    txtUser.Clear();
+                    txtPassword.Clear();
                 }
+                catch (Exception err)
+                {
+                    MessageBox.Show("Error al registrar al usuario\n\nError: " + err);
+                }
+
 
             }
             else

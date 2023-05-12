@@ -12,7 +12,7 @@ using System.Windows.Forms;
 using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
 using System.Data.SQLite;
-
+using inicioDeSesion.config;
 
 namespace inicioDeSesion
 {
@@ -26,116 +26,82 @@ namespace inicioDeSesion
         public frmSingIn()
         {
             InitializeComponent();
-            leerArc();
-
-        }
-
-        public void llenarArc()
-        {
-
-            StreamWriter sw = new StreamWriter("..\\..\\users.txt");
-
-            foreach (User u in usuarios)
-            {
-                sw.WriteLine($"{u.id}|{u.user}|{u.password}");
-            }
-            sw.Close();
-
-        }
-
-        public void leerArc()
-        {
-            StreamReader sr = new StreamReader("..\\..\\users.txt");
-            string linea;
-            linea = sr.ReadLine();
-            bool usuarioRepetido = false;
-            while (linea != null)
-            {
-                string[] vec = linea.Split('|');
-                try
-                {
-                    foreach (User u in usuarios)
-                    {
-                        if (u.user == vec[1])
-                        {
-                            usuarioRepetido = true;
-                        }
-                    }
-
-                    if (usuarioRepetido == false)
-                    {
-                        usuarios.Add(new User(Convert.ToInt32(vec[0]), vec[1], vec[2]));
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Error: " + e);
-                }
-
-                linea = sr.ReadLine();
-            }
-            sr.Close();
         }
 
 
         private void btnSignIn_Click(object sender, EventArgs e)
         {
-            
-            try
+
+            string queryCheckUserAndPassword = "SELECT COUNT(*) FROM tblUsuario WHERE user=@User AND password=@Password";
+            string queryCheckUser = "SELECT COUNT(*) FROM tblUsuario WHERE user=@User";
+
+
+            int intentos = 0;
+
+            //intentamos conectarnos a la db (en la clase ConexionDB hay validadores)
+            using (SQLiteConnection conexion_sqlite = new ConexionDB("InicioSesion").ConectarDB())
             {
-                //Utilizamos estos tres objetos de SQLite
-                SQLiteConnection conexion_sqlite;
-                SQLiteCommand cmd_sqlite;
-                SQLiteDataReader datareader_sqlite;
-
-                //Crear una nueva conexión de la base de datos
-                conexion_sqlite = new SQLiteConnection("Data Source=InicioSesion.db;Version=3;Compress=True;");
-
-                //Abriremos la conexión
                 conexion_sqlite.Open();
 
-                //Creando el comando SQL
-                cmd_sqlite = conexion_sqlite.CreateCommand();
+
+                //comando para verificar que el usuario y contraseña coincidan
+                SQLiteCommand cmd_checkUserAndPassword = new SQLiteCommand(queryCheckUserAndPassword, conexion_sqlite);
+
+                //se le agrega esto para evitar que inserten codigo sql
+                cmd_checkUserAndPassword.Parameters.AddWithValue("@User", txtUser.Text);
+                cmd_checkUserAndPassword.Parameters.AddWithValue("@Password", txtPassword.Text);
+
+                // verifica que exista: 1 =  si existe / 0 =  no existe
+                int userAndPasswordExist = Convert.ToInt32(cmd_checkUserAndPassword.ExecuteScalar());
 
 
-                cmd_sqlite.CommandText = string.Format("SELECT * FROM tblUsuario WHERE user='{0}' AND password='{1}'", txtUser.Text, txtPassword.Text);                
+                //comando para verificar que el usuario existe
+                SQLiteCommand cmd_checkUser = new SQLiteCommand(queryCheckUser, conexion_sqlite);
 
-                int count = Convert.ToInt32(cmd_sqlite.ExecuteScalar());
+                cmd_checkUser.Parameters.AddWithValue("@User", txtUser.Text);
 
-                if (count > 0) { 
-                    MessageBox.Show("Usuario registrado :)");
+                int userExist = Convert.ToInt32(cmd_checkUser.ExecuteScalar());
+
+
+                if (!string.IsNullOrEmpty(txtUser.Text) && !string.IsNullOrEmpty(txtPassword.Text))
+                {
+
+                    if (userAndPasswordExist > 0)
+                    {
+                        MessageBox.Show("Bienvenido :D");
+                    }
+                    else
+                    {
+                        intentos++;
+
+                        if (intentos >= 3)
+                        {
+                            Application.Exit();
+                        }
+
+                        if (userExist == 0)
+                        {
+                            MessageBox.Show("El usuario no existe, por favor registrese");
+                            return;
+                        }
+
+                        MessageBox.Show("El usuario o la contraseña son incorrectos");
+                    }
                 }
                 else
                 {
-                    intentos++;
+                    MessageBox.Show("Ingrese usuario y/o contraseña");
 
-                    if (intentos >= 3)
-                    {
-                        Application.Exit();
-                    }
-
-                    MessageBox.Show("El usuario o la contraseña estan incorrectas");
                 }
-
-
-                conexion_sqlite.Close();
-
-
-                txtUser.Clear();
-                txtPassword.Clear();
             }
-            catch (Exception err)
-            {
-                MessageBox.Show("Error al registrar al usuario " + err);
-            }
-
-
-
         }
+
+    
+
+        
 
         private void pbxBack_Click(object sender, EventArgs e)
         {
-
             frmPrincipal principal = new frmPrincipal();
             principal.Show();
             Hide();
