@@ -28,9 +28,9 @@ namespace inicioDeSesion
 
         private void btnSignIn_Click(object sender, EventArgs e)
         {
-            string users = "SELECT * FROM tblUsuario";
-            string queryCheckUserAndPassword = "SELECT * FROM tblUsuario WHERE user=@User AND password=@Password LIMIT 1;";
-            string queryCheckUser = "SELECT * FROM tblUsuario WHERE user=@User LIMIT 1";
+            string users = "SELECT * FROM tbl_usuario";
+            string queryCheckUserAndPassword = "SELECT * FROM tbl_usuario WHERE user=@User AND password=@Password LIMIT 1;";
+            string queryCheckUser = "SELECT * FROM tbl_usuario WHERE user=@User LIMIT 1";
 
 
             //intentamos conectarnos a la db (en la clase ConexionDB hay validadores)

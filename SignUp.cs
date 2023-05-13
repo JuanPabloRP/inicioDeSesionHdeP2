@@ -31,14 +31,13 @@ namespace inicioDeSesion
             Random n = new Random();
             int id;
             bool idRepetido;
-
             do
             {
                 idRepetido = false;
                 id = n.Next(1000000, 9999999);
 
                 try {
-                    string checkIDUnico = string.Format("SELECT COUNT(*) FROM tblUsuario WHERE id={0}", id);
+                    string checkIDUnico = string.Format("SELECT COUNT(*) FROM tbl_usuario WHERE id={0}", id);
                     
 
                     SQLiteCommand cmd_checkIDUnico = new SQLiteCommand(checkIDUnico, _conexionsqlite);
@@ -67,8 +66,8 @@ namespace inicioDeSesion
 
         private void btnSignUp_Click(object sender, EventArgs e)
         {
-            string queryAddUser = "INSERT INTO tblUsuario VALUES (@id, @user, @password)";
-            string queryLookingForUser = "SELECT COUNT(user) FROM tblUsuario WHERE user=@user";
+            string queryAddUser = "INSERT INTO tbl_usuario VALUES (@id, @user, @password)";
+            string queryLookingForUser = "SELECT COUNT(user) FROM tbl_usuario WHERE user=@user";
             
 
             using (SQLiteConnection conexion_sqlite = new ConexionDB("InicioSesion").ConectarDB()) {
