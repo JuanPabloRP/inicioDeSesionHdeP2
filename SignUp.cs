@@ -1,4 +1,5 @@
-﻿using System;
+﻿using inicioDeSesion.config;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -21,95 +22,98 @@ namespace inicioDeSesion
         public frmSignUp()
         {
             InitializeComponent();
+        }
 
-        
+       
+
+        public static int verificarIDUnico(SQLiteConnection _conexionsqlite)
+        {
+            Random n = new Random();
+            int id;
+            bool idRepetido;
+
+            do
+            {
+                idRepetido = false;
+                id = n.Next(1000000, 9999999);
+
+                try {
+                    string checkIDUnico = string.Format("SELECT COUNT(*) FROM tblUsuario WHERE id={0}", id);
+                    
+
+                    SQLiteCommand cmd_checkIDUnico = new SQLiteCommand(checkIDUnico, _conexionsqlite);
+
+                    
+                    if (Convert.ToInt32(cmd_checkIDUnico.ExecuteScalar()) > 0)
+                    {
+                        idRepetido = true;
+                    }
+                }
+                catch (SQLiteException ex) {
+                    MessageBox.Show("Error (sql): " + ex);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex);
+                }
+
+            } while (idRepetido == true);
+
+
+            return id;
         }
 
 
 
-        
-
         private void btnSignUp_Click(object sender, EventArgs e)
         {
-            Random n = new Random();
-            int id = 0;
-            bool idRepetido = false;
-            bool userRepetido = false;
+            string queryAddUser = "INSERT INTO tblUsuario VALUES (@id, @user, @password)";
+            string queryLookingForUser = "SELECT COUNT(user) FROM tblUsuario WHERE user=@user";
+            
 
-            if (txtUser.Text.Trim() != "" && txtPassword.Text.Trim() != "" )
-            {
-                try
+            using (SQLiteConnection conexion_sqlite = new ConexionDB("InicioSesion").ConectarDB()) {
+                conexion_sqlite.Open();
+
+                int id = verificarIDUnico(conexion_sqlite);
+
+                SQLiteCommand cmd_lookingForUser = new SQLiteCommand(queryLookingForUser, conexion_sqlite);
+                cmd_lookingForUser.Parameters.AddWithValue("@user", txtUser.Text);
+
+                if(!string.IsNullOrEmpty(txtUser.Text) && !string.IsNullOrEmpty(txtPassword.Text))
                 {
-                    SQLiteConnection conexion_sqlite;
-                    SQLiteCommand cmd_sqlite;
+                    //verifica que el usuario no este creado
+                    if (Convert.ToInt32(cmd_lookingForUser.ExecuteScalar()) > 0)
+                    {
+                        MessageBox.Show("Error, el usuario ya existe");
+                        return;
+                    }
+
+                    //comando para agregar usuarioi
+                    SQLiteCommand cmd_addUser = new SQLiteCommand(queryAddUser, conexion_sqlite);
+
+                    MessageBox.Show("id: " + id);
+                    //parametros pa que no nos metan cosas raras a la DB, si sabe brr
+                    cmd_addUser.Parameters.AddWithValue("@id", id);
+                    cmd_addUser.Parameters.AddWithValue("@user", txtUser.Text);
+                    cmd_addUser.Parameters.AddWithValue("@password", txtPassword.Text);
+
                     
+                    SQLiteDataReader datareader_sqlite;
 
+                    datareader_sqlite = cmd_addUser.ExecuteReader();
+        
+                    MessageBox.Show("Registrado");
 
-                    conexion_sqlite = new SQLiteConnection("Data Source=InicioSesion.db;Version=3;Compress=True;");
-
-
-                    conexion_sqlite.Open();
-
-                    cmd_sqlite = conexion_sqlite.CreateCommand();
-
-                    try
-                    {
-                        cmd_sqlite.CommandText = string.Format("SELECT * FROM tblUsuario WHERE user='{0}'", txtUser.Text);
-
-
-
-                    }
-                    catch (SQLiteException ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-
-
-
-
-                    cmd_sqlite.CommandText = string.Format("INSERT INTO tblUsuario values({0},'{1}','{2}')", id, txtUser.Text, txtPassword.Text);
-
-
-                    /*
-                     // SQLiteDataReader datareader_sqlite;
-                    
-                    datareader_sqlite = cmd_sqlite.ExecuteReader();
-
-
-                    while (datareader_sqlite.Read())
-                    {
-
-                        int idU = Convert.ToInt32(datareader_sqlite.GetString(0));
-                        string nameU = datareader_sqlite.GetString(1);
-                        string passU = datareader_sqlite.GetString(2);
-
-                        MessageBox.Show(idU + nameU + passU);
-
-                    }
-                    */
-
-                    conexion_sqlite.Close();
-
-                    MessageBox.Show("Usuario registrado :)");
-
-                    txtUser.Clear();
-                    txtPassword.Clear();
                 }
-                catch (Exception err)
+                else
                 {
-                    MessageBox.Show("Error al registrar al usuario\n\nError: " + err);
+                    MessageBox.Show("Ingrese el usuario y la contraseña");
                 }
 
+                
+            }
 
-            }
-            else
-            {
-                MessageBox.Show("Los campos estan vacios :(");
-            }
+
         }
 
         private void pbxBack_Click(object sender, EventArgs e)

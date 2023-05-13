@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SQLite;
 
 namespace inicioDeSesion.config
 {
@@ -16,14 +17,15 @@ namespace inicioDeSesion.config
         }
 
 
-        public System.Data.SQLite.SQLiteConnection ConectarDB()
+        public SQLiteConnection ConectarDB()
         {
             SQLiteConnection conexion_sqlite = null;
 
             try
             {
                 conexion_sqlite = new SQLiteConnection(string.Format("Data Source={0}.db;Version=3;Compress=True;", nombreDB));
-               
+                //MessageBox.Show("conectado");
+
             }
             catch (SQLiteException ex)
             {
@@ -33,9 +35,19 @@ namespace inicioDeSesion.config
             {
                 MessageBox.Show("Error: " + ex.Message);
             }
-            
+
 
             return conexion_sqlite;
         }
+
+
+
+        public void AgregarRegistro(string user, string password)
+        {
+
+        }
+
+
+        
     }
 }

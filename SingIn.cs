@@ -18,30 +18,27 @@ namespace inicioDeSesion
 {
     public partial class frmSingIn : Form
     {
-        int intentos = 0;
-        List<User> usuarios = User.usuarios;
-        User user;
 
+        int intentos = 0;
 
         public frmSingIn()
         {
             InitializeComponent();
         }
 
-
         private void btnSignIn_Click(object sender, EventArgs e)
         {
+            string users = "SELECT * FROM tblUsuario";
+            string queryCheckUserAndPassword = "SELECT * FROM tblUsuario WHERE user=@User AND password=@Password LIMIT 1;";
+            string queryCheckUser = "SELECT * FROM tblUsuario WHERE user=@User LIMIT 1";
 
-            string queryCheckUserAndPassword = "SELECT COUNT(*) FROM tblUsuario WHERE user=@User AND password=@Password";
-            string queryCheckUser = "SELECT COUNT(*) FROM tblUsuario WHERE user=@User";
-
-
-            int intentos = 0;
 
             //intentamos conectarnos a la db (en la clase ConexionDB hay validadores)
             using (SQLiteConnection conexion_sqlite = new ConexionDB("InicioSesion").ConectarDB())
             {
                 conexion_sqlite.Open();
+
+                SQLiteCommand cmd_getUsers = new SQLiteCommand(users, conexion_sqlite);
 
 
                 //comando para verificar que el usuario y contraseña coincidan
@@ -69,6 +66,21 @@ namespace inicioDeSesion
                     if (userAndPasswordExist > 0)
                     {
                         MessageBox.Show("Bienvenido :D");
+
+                        SQLiteDataReader datareader_sqlite;
+
+                        datareader_sqlite = cmd_getUsers.ExecuteReader();
+
+
+                        while (datareader_sqlite.Read())
+                        {
+                            int idU = datareader_sqlite.GetInt32(0);
+                            string nameU = datareader_sqlite.GetString(1);
+                            string passU = datareader_sqlite.GetString(2);
+
+                            MessageBox.Show(idU + nameU + passU);
+                        }
+                        datareader_sqlite.Close();
                     }
                     else
                     {
@@ -76,6 +88,8 @@ namespace inicioDeSesion
 
                         if (intentos >= 3)
                         {
+                            MessageBox.Show("Excediste el número máximo de intentos");
+
                             Application.Exit();
                         }
 
@@ -95,6 +109,8 @@ namespace inicioDeSesion
                 }
             }
         }
+
+
 
     
 
