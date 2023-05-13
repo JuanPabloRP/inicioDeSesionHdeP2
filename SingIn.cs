@@ -71,15 +71,6 @@ namespace inicioDeSesion
 
                         datareader_sqlite = cmd_getUsers.ExecuteReader();
 
-
-                        while (datareader_sqlite.Read())
-                        {
-                            int idU = datareader_sqlite.GetInt32(0);
-                            string nameU = datareader_sqlite.GetString(1);
-                            string passU = datareader_sqlite.GetString(2);
-
-                            MessageBox.Show(idU + nameU + passU);
-                        }
                         datareader_sqlite.Close();
                     }
                     else

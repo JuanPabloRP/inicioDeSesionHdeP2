@@ -91,7 +91,7 @@ namespace inicioDeSesion
                     //comando para agregar usuarioi
                     SQLiteCommand cmd_addUser = new SQLiteCommand(queryAddUser, conexion_sqlite);
 
-                    MessageBox.Show("id: " + id);
+                    
                     //parametros pa que no nos metan cosas raras a la DB, si sabe brr
                     cmd_addUser.Parameters.AddWithValue("@id", id);
                     cmd_addUser.Parameters.AddWithValue("@user", txtUser.Text);
@@ -101,7 +101,10 @@ namespace inicioDeSesion
                     SQLiteDataReader datareader_sqlite;
 
                     datareader_sqlite = cmd_addUser.ExecuteReader();
-        
+
+                    datareader_sqlite.Close();
+
+
                     MessageBox.Show("Registrado");
 
                 }
