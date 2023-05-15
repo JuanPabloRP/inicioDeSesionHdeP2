@@ -26,6 +26,24 @@ namespace inicioDeSesion.config
                 conexion_sqlite = new SQLiteConnection(string.Format("Data Source={0}.db;Version=3;Compress=True;", nombreDB));
                 //MessageBox.Show("conectado");
 
+                conexion_sqlite.Open();
+
+                // Crear la tabla solo si no existe
+                string queryCrearTabla = @"CREATE TABLE IF NOT EXISTS tbl_usuario (
+	                                    id	INTEGER NOT NULL,
+	                                    user	TEXT NOT NULL UNIQUE,
+	                                    password	TEXT NOT NULL,
+	                                    PRIMARY KEY(id)
+                                        )";
+
+                SQLiteCommand cmd_crearTabla = new SQLiteCommand(queryCrearTabla, conexion_sqlite);
+
+                //pa que ejecute el comando pero no devuelve na
+                cmd_crearTabla.ExecuteNonQuery();
+
+                //cerramos la wea
+                conexion_sqlite.Close();
+
             }
             catch (SQLiteException ex)
             {
@@ -51,3 +69,4 @@ namespace inicioDeSesion.config
         
     }
 }
+
